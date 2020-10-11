@@ -33,17 +33,6 @@
       "./test/setup.js"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "npm run lint",
-      "git add"
-    ]
-  },
   "dependencies": {
     "cross-env": "6.0.3",
     "dotenv": "8.2.0",
