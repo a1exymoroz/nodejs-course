@@ -1,6 +1,6 @@
 const User = require('./user.model');
 
-const users = [];
+let users = [];
 
 const getAll = async () => {
   return users;
