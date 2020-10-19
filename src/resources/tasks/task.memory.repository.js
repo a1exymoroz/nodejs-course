@@ -38,7 +38,7 @@ const updateTask = async (boardId, taskId, taskUpdated) => {
 };
 
 const deleteTask = async (boardId, taskId) => {
-  tasks = tasks.filter(task => task.boardId === boardId && task.id !== taskId);
+  tasks = tasks.filter(task => task.id !== taskId);
 };
 
 module.exports = {

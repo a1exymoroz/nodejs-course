@@ -5,6 +5,10 @@ const YAML = require('yamljs');
 const userRouter = require('./resources/users/user.router');
 const borderRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
+const errorMiddleware = require('./middlewares/error.middlewares');
+const loggerMiddleware = require('./middlewares/logger.middlewares');
+const LoggerService = require('./services/logger.service');
+const loggerService = new LoggerService();
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -21,8 +25,23 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use(loggerMiddleware);
+
 app.use('/users', userRouter);
 app.use('/boards', borderRouter);
 app.use('/boards', taskRouter);
+
+app.use(errorMiddleware);
+
+process.on('uncaughtException', err => {
+  loggerService.error(500, `Uncaught Exception: ${err.message}, ${err.stack}`);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  loggerService.error(500, `Unhandled Rejection: ${promise} / ${reason}`);
+});
+
+// throw Error('Test error.');
+// Promise.reject(Error('Test error.'));
 
 module.exports = app;
