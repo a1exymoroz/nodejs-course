@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const User = require('./user.model');
 const usersService = require('./user.service');
 const catchErrors = require('../../services/catch-errors.service');
+const User = require('./user.model');
 
 router.route('/').get(
   catchErrors(async (req, res) => {
@@ -14,11 +14,12 @@ router.route('/').get(
 router.route('/:id').get(
   catchErrors(async (req, res) => {
     const id = req.params.id;
+    const user = await usersService.getById(id);
 
-    if (id) {
-      const user = await usersService.getById(id);
-
+    if (user) {
       res.json(User.toResponse(user));
+    } else {
+      res.status(404).json(null);
     }
   })
 );
@@ -35,6 +36,7 @@ router.route('/').post(
 router.route('/:id').put(
   catchErrors(async (req, res) => {
     const user = req.body;
+    user.id = req.params.id;
 
     const newUser = await usersService.updateUser(user);
 

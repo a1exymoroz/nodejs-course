@@ -1,44 +1,29 @@
 const Task = require('./task.model');
 
-let tasks = [];
-
 const getAll = async boardId => {
-  return tasks.filter(task => task.boardId === boardId);
+  return await Task.find({ boardId });
 };
 
 const getById = async (boardId, taskId) => {
-  return tasks.find(task => task.boardId === boardId && task.id === taskId);
+  return await Task.findOne({ boardId, _id: taskId });
 };
 
 const getByUserId = async userId => {
-  return tasks.filter(task => task.userId === userId);
+  return await Task.find({ userId });
 };
 
 const createTask = async task => {
-  const newTask = new Task({ ...task });
+  const taskCreated = new Task({ ...task });
 
-  tasks.push(newTask);
-
-  return newTask;
+  return await taskCreated.save();
 };
 
 const updateTask = async (boardId, taskId, taskUpdated) => {
-  const currentTask = tasks.find(
-    task => task.boardId === boardId && task.id === taskId
-  );
-
-  currentTask.title = taskUpdated.title;
-  currentTask.order = taskUpdated.order;
-  currentTask.description = taskUpdated.description;
-  currentTask.userId = taskUpdated.userId;
-  currentTask.boardId = taskUpdated.boardId;
-  currentTask.columnId = taskUpdated.columnId;
-
-  return currentTask;
+  return await Task.updateOne({ boardId, _id: taskId }, taskUpdated);
 };
 
 const deleteTask = async (boardId, taskId) => {
-  tasks = tasks.filter(task => task.id !== taskId);
+  return await Task.deleteOne({ boardId, _id: taskId });
 };
 
 module.exports = {

@@ -1,34 +1,24 @@
 const User = require('./user.model');
 
-let users = [];
-
 const getAll = async () => {
-  return users;
+  return await User.find();
 };
 
 const getById = async id => {
-  return users.find(user => user.id === id);
+  return await User.findById(id);
 };
 
 const createUser = async user => {
   const newUser = new User({ ...user });
-  users.push(newUser);
-
-  return newUser;
+  return await newUser.save();
 };
 
 const updateUser = async userUpdated => {
-  const currentUser = users.find(user => user.id === userUpdated.id);
-
-  currentUser.name = userUpdated.name;
-  currentUser.login = userUpdated.login;
-  currentUser.password = userUpdated.password;
-
-  return currentUser;
+  return await User.updateOne({ _id: userUpdated.id }, userUpdated);
 };
 
 const deleteUser = async id => {
-  users = users.filter(user => user.id !== id);
+  return await User.deleteOne({ _id: id });
 };
 
 module.exports = {
