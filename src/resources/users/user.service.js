@@ -1,22 +1,27 @@
 const usersMemoryRepository = require('./user.memory.repository');
 const taskService = require('../tasks/task.service');
 
-const getAll = () => usersMemoryRepository.getAll();
+const getAll = async () => await usersMemoryRepository.getAll();
 
-const getById = id => usersMemoryRepository.getById(id);
+const getById = async id => await usersMemoryRepository.getById(id);
 
-const createUser = user => usersMemoryRepository.createUser(user);
+const createUser = async user => await usersMemoryRepository.createUser(user);
 
-const updateUser = user => usersMemoryRepository.updateUser(user);
+const updateUser = async user => await usersMemoryRepository.updateUser(user);
 
 const deleteUser = async id => {
-  await usersMemoryRepository.deleteUser(id);
+  const result = await usersMemoryRepository.deleteUser(id);
   const userTasks = await taskService.getByUserId(id);
+  const tasks = [];
 
-  userTasks.forEach(async task => {
+  userTasks.map(task => {
     task.userId = null;
-    await taskService.updateTask(task.boardId, task.id, task);
+    tasks.push(taskService.updateTask(task.boardId, task.id, task));
   });
+
+  await Promise.all(tasks);
+
+  return result;
 };
 
 module.exports = {

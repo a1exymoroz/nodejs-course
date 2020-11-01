@@ -3,12 +3,12 @@ const loggerService = new LoggerService();
 
 function errorHandler(err, req, res, next) {
   if (err) {
-    loggerService.error(500, err.message, err.stack);
-    res.status(500).json({
-      errorCode: 500,
+    loggerService.error(err.code, err.message, err.stack);
+
+    res.status(err.code).json({
+      errorCode: err.code,
       message: err.message
     });
-
     return;
   }
 

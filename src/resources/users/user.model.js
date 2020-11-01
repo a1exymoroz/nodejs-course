@@ -4,7 +4,10 @@ const uuid = require('uuid');
 const userSchema = new mongoose.Schema(
   {
     name: String,
-    login: String,
+    login: {
+      type: String,
+      unique: true
+    },
     password: String,
     _id: {
       type: String,
@@ -18,6 +21,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.statics.toResponse = user => {
   const { id, name, login } = user;
+
   return { id, name, login };
 };
 

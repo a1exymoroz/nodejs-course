@@ -2,6 +2,7 @@ const express = require('express');
 const swaggerUI = require('swagger-ui-express');
 const path = require('path');
 const YAML = require('yamljs');
+const authRouter = require('./resources/auth/auth.router');
 const userRouter = require('./resources/users/user.router');
 const borderRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
@@ -10,6 +11,7 @@ const loggerMiddleware = require('./middlewares/logger.middlewares');
 const LoggerService = require('./services/logger.service');
 const loggerService = new LoggerService();
 const connectDb = require('./db/db.js');
+const checkTokenMiddleware = require('./middlewares/check-token.middlewares');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -29,9 +31,10 @@ connectDb(() => {
 
   app.use(loggerMiddleware);
 
-  app.use('/users', userRouter);
-  app.use('/boards', borderRouter);
-  app.use('/boards', taskRouter);
+  app.use('/login', authRouter);
+  app.use('/users', checkTokenMiddleware, userRouter);
+  app.use('/boards', checkTokenMiddleware, borderRouter);
+  app.use('/boards', checkTokenMiddleware, taskRouter);
 
   app.use(errorMiddleware);
 
