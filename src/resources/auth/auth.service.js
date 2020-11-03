@@ -1,32 +1,33 @@
 const { JWT_SECRET_KEY } = require('../../common/config');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const usersMemoryRepository = require('../users/user.memory.repository');
 const { UserNotFoundError } = require('../../common/errors');
+const { checkHashedPassword } = require('../../services/hashService');
 
-const login = async authData => {
+const signToken = async authData => {
   const user = await usersMemoryRepository.getByLogin(authData.login);
 
   if (user) {
-    const isPasswordsMatch = await bcrypt.compare(
+    const hashedPassword = user.password;
+
+    const comparisonRes = await checkHashedPassword(
       authData.password,
-      user.password
+      hashedPassword
     );
 
-    if (isPasswordsMatch) {
-      return jwt.sign(
-        {
-          userId: user._id,
-          login: user.login
-        },
-        JWT_SECRET_KEY
-      );
+    if (comparisonRes) {
+      const id = user.id;
+      const login = user.login;
+      const token = jwt.sign({ id, login }, JWT_SECRET_KEY, {
+        expiresIn: '10m'
+      });
+      return token;
     }
-  }
 
-  throw new UserNotFoundError();
+    throw new UserNotFoundError();
+  }
 };
 
 module.exports = {
-  login
+  signToken
 };

@@ -5,7 +5,7 @@ const authService = require('./auth.service');
 router.route('/').post(
   catchErrors(async (req, res) => {
     const authData = req.body;
-    const token = await authService.login(authData);
+    const token = await authService.signToken(authData);
 
     res.status(200).json({ token });
   })
